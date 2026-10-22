@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Daily Sales Report – Sam</title>
+<meta name="description" content="Daily sales updates – tap to view">
+<meta property="og:title" content="Daily Sales Report – Sam">
+<meta property="og:description" content="Tap to view the daily sales updates">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0b2545">
+<style>
+:root{
+  --bg:#f2f4f8; --card:#ffffff; --ink:#0f1b2d; --muted:#66758a; --line:#e3e8ef;
+  --brand:#0b2545; --brand2:#1d5fa8; --soft:#eaf1fb; --ok:#127a4a; --okbg:#e7f6ee;
+  --empty:#f7f9fc; --shadow:0 1px 2px rgba(15,27,45,.06),0 4px 14px rgba(15,27,45,.06);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0a111d; --card:#111a2a; --ink:#e7eef8; --muted:#93a1b6; --line:#213049;
+    --brand:#0b2545; --brand2:#6aa6f5; --soft:#152540; --ok:#4fc68c; --okbg:#10291e;
+    --empty:#0e1726; --shadow:none;
+  }
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:880px;margin:0 auto;padding:0 16px}
+button{font:inherit;color:inherit}
+.hidden{display:none!important}
+
+/* header */
+header{background:linear-gradient(135deg,#0b2545 0%,#13315c 60%,#1d4e89 100%);color:#fff;padding:22px 0 64px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.eyebrow{font-size:11px;letter-spacing:2.2px;text-transform:uppercase;opacity:.7}
+.who{font-size:22px;font-weight:700;margin-top:6px;letter-spacing:-.2px}
+.meta{font-size:13px;opacity:.75;margin-top:6px}
+.icons{display:flex;gap:8px}
+.ibtn{width:38px;height:38px;border-radius:10px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:grid;place-items:center}
+.ibtn svg{width:18px;height:18px}
+
+main{margin-top:-44px;padding-bottom:40px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow)}
+
+/* latest */
+.latest{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;cursor:pointer;width:100%;text-align:left}
+.latest .l1{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--brand2);font-weight:700}
+.latest .l2{font-size:16px;font-weight:700;margin-top:4px}
+.latest .l3{font-size:13px;color:var(--muted);margin-top:3px}
+.go{flex:none;width:36px;height:36px;border-radius:50%;background:var(--soft);display:grid;place-items:center;color:var(--brand2)}
+
+/* month nav */
+.mnav{display:flex;align-items:center;justify-content:space-between;margin:22px 2px 12px}
+.mnav h2{margin:0;font-size:18px;letter-spacing:-.2px}
+.nav{display:flex;gap:8px}
+.nbtn{width:36px;height:36px;border-radius:10px;border:1px solid var(--line);background:var(--card);cursor:pointer;display:grid;place-items:center}
+.nbtn:disabled{opacity:.35;cursor:default}
+
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:640px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{padding:14px 16px}
+.kl{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.kv{font-size:22px;font-weight:700;margin-top:6px;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.kv small{font-size:12px;font-weight:600;color:var(--muted);margin-left:3px}
+.ks{font-size:12px;color:var(--muted);margin-top:3px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.chip{font-size:12.5px;padding:7px 12px;border-radius:999px;background:var(--card);border:1px solid var(--line);color:var(--muted)}
+.chip b{color:var(--ink);margin-left:4px}
+
+/* calendar */
+.cal{padding:14px;margin-top:14px}
+.dow,.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.dow div{font-size:11px;text-align:center;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;padding:2px 0 8px}
+.day{aspect-ratio:1/1;border-radius:12px;background:var(--empty);border:1px solid transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0;min-width:0}
+.day .dn{font-size:14px;font-weight:600;color:var(--muted)}
+.day.blank{background:transparent}
+.day.future .dn{opacity:.4}
+.day.today{border-color:var(--brand2)}
+.day.has{background:var(--okbg);border-color:color-mix(in srgb,var(--ok) 30%,transparent);cursor:pointer;transition:transform .12s ease}
+.day.has:hover{transform:translateY(-1px)}
+.day.has:active{transform:scale(.97)}
+.day.has .dn{color:var(--ink)}
+.day .amt{font-size:10.5px;font-weight:700;color:var(--ok);font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;padding:0 2px}
+.legend{display:flex;gap:16px;justify-content:center;font-size:12px;color:var(--muted);margin-top:12px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+.empty-note{text-align:center;color:var(--muted);font-size:13px;padding:18px 0 4px}
+footer{text-align:center;color:var(--muted);font-size:12px;margin-top:26px}
+.demo{background:#fff4d6;color:#7a5500;font-size:12.5px;text-align:center;padding:8px 12px}
+
+/* modal */
+.back{position:fixed;inset:0;background:rgba(6,12,22,.55);display:flex;align-items:flex-end;justify-content:center;z-index:20;animation:fade .15s ease}
+@media(min-width:640px){.back{align-items:center}}
+.sheet{background:var(--card);width:100%;max-width:560px;max-height:90vh;overflow:auto;border-radius:20px 20px 0 0;animation:up .2s ease}
+@media(min-width:640px){.sheet{border-radius:20px}}
+.sh{position:sticky;top:0;background:var(--card);padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;z-index:1}
+.sh .t{flex:1;min-width:0}
+.sh .t1{font-size:11px;letter-spacing:1.4px;text-transform:uppercase;color:var(--brand2);font-weight:700}
+.sh .t2{font-size:17px;font-weight:700;margin-top:3px}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 18px 6px}
+.hero div{background:var(--soft);border-radius:12px;padding:12px 14px}
+.stats{display:grid;grid-template-columns:1fr 1fr;padding:8px 18px}
+.st{padding:11px 0;border-bottom:1px solid var(--line)}
+.st:nth-child(odd){padding-right:10px}
+.sl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px}
+.sv{font-size:16px;font-weight:600;margin-top:4px;font-variant-numeric:tabular-nums}
+.sv small{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:2px}
+.notes{padding:6px 18px 22px}
+.note{margin-top:16px}
+.nl{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--brand2);font-weight:700}
+.nv{margin-top:6px;line-height:1.6;font-size:14.5px;white-space:pre-wrap;word-wrap:break-word}
+.sub{font-size:12px;color:var(--muted);padding:0 18px 20px}
+@keyframes fade{from{opacity:0}}
+@keyframes up{from{transform:translateY(24px);opacity:0}}
+
+/* login */
+.login{min-height:100vh;display:grid;place-items:center;padding:24px;background:linear-gradient(160deg,#0b2545,#13315c 55%,#1d4e89)}
+.lbox{width:100%;max-width:360px;background:var(--card);border-radius:20px;padding:28px 24px;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center}
+.lock{width:52px;height:52px;border-radius:14px;background:var(--soft);display:grid;place-items:center;margin:0 auto 14px;color:var(--brand2)}
+.lbox h1{font-size:19px;margin:0}
+.lbox p{color:var(--muted);font-size:13.5px;margin:8px 0 20px}
+.lbox input{width:100%;font-size:22px;letter-spacing:8px;text-align:center;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--empty);color:var(--ink);outline:none}
+.lbox input:focus{border-color:var(--brand2)}
+.primary{width:100%;margin-top:12px;padding:13px;border-radius:12px;border:0;background:var(--brand2);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+.primary:disabled{opacity:.6}
+.err{color:#c0392b;font-size:13px;min-height:18px;margin-top:10px}
+.spin{width:28px;height:28px;border:3px solid var(--line);border-top-color:var(--brand2);border-radius:50%;animation:rot .8s linear infinite;margin:60px auto}
+@keyframes rot{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<!-- ===== LOGIN ===== -->
+<div id="login" class="login hidden">
+  <form class="lbox" id="loginForm" autocomplete="off">
+    <div class="lock"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+    <h1>Daily Sales Report</h1>
+    <p id="loginWho">Private report · enter PIN to view</p>
+    <input id="pin" type="password" inputmode="numeric" placeholder="••••" aria-label="PIN">
+    <button class="primary" id="loginBtn" type="submit">Open report</button>
+    <div class="err" id="err"></div>
+  </form>
+</div>
+
+<!-- ===== APP ===== -->
+<div id="app" class="hidden">
+  <div id="demo" class="demo hidden">Preview with sample data – connect API_URL to show real reports</div>
+  <header>
+    <div class="wrap top">
+      <div>
+        <div class="eyebrow">Daily Sales Report</div>
+        <div class="who" id="who"></div>
+        <div class="meta" id="updated"></div>
+      </div>
+      <div class="icons">
+        <button class="ibtn" id="refresh" title="Refresh" aria-label="Refresh"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 4v5h-5"/></svg></button>
+        <button class="ibtn" id="logout" title="Lock" aria-label="Lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <button class="card latest" id="latest"></button>
+
+    <div class="mnav">
+      <h2 id="mTitle"></h2>
+      <div class="nav">
+        <button class="nbtn" id="prev" aria-label="Previous month"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <button class="nbtn" id="next" aria-label="Next month"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+    <div class="chips" id="chips"></div>
+
+    <div class="card cal">
+      <div class="dow"><div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div></div>
+      <div class="grid" id="grid"></div>
+      <div class="legend"><span><i style="background:var(--okbg);border:1px solid var(--ok)"></i>Report submitted</span><span><i style="border:1px solid var(--brand2)"></i>Today</span></div>
+      <div class="empty-note hidden" id="emptyNote">No reports for this month yet.</div>
+    </div>
+
+    <footer id="foot"></footer>
+  </main>
+</div>
+
+<div id="loading" class="spin"></div>
+<div id="modal"></div>
+
+<script>
+/* ================= CONFIG ================= */
+const CONFIG = {
+  // Paste your Apps Script "Web app URL" between the quotes (ends with /exec)
+  API_URL: 'https://script.google.com/macros/s/AKfycbyw9CC10n8Yh875lVu3s5W92-9LOAhQTBuEtNb2cdvKgO0dNY0STaj18qs8XGI200rg/exec',
+  NAME: 'Alsamaual Alhinai (Sam)'
+};
+/* ========================================== */
+
+const $ = s => document.querySelector(s);
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const WD = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const WDS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+let RECORDS = {}, cur = null, pin = '', NAME = CONFIG.NAME;
+
+const store = (k, v) => { try { v === null ? localStorage.removeItem(k) : localStorage.setItem(k, v); } catch (e) {} };
+const load = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+const pad = x => String(x).padStart(2, '0');
+const num = v => { const x = Number(String(v == null ? '' : v).replace(/,/g, '').trim()); return isNaN(x) ? 0 : x; };
+const omr = v => num(v).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+const short = v => { const x = num(v); return x >= 1000 ? (x / 1000).toFixed(1) + 'k' : String(Math.round(x)); };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const parseD = s => { const p = s.split('-'); return new Date(+p[0], +p[1] - 1, +p[2]); };
+const todayKey = () => { const d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+const niceDate = s => { const d = parseD(s); return WD[d.getDay()] + ', ' + d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear(); };
+
+function show(id) {
+  ['login', 'app', 'loading'].forEach(x => $('#' + x).classList.toggle('hidden', x !== id));
+}
+
+async function fetchData(p) {
+  if (!CONFIG.API_URL) return { ok: true, demo: true, by: CONFIG.NAME, records: demoData() };
+  const r = await fetch(CONFIG.API_URL + '?key=' + encodeURIComponent(p), { cache: 'no-store' });
+  return r.json();
+}
+
+async function start(p, fromLogin) {
+  show('loading');
+  try {
+    const res = await fetchData(p);
+    if (!res.ok) throw new Error(res.error || 'Wrong PIN');
+    pin = p; store('salesPin', p);
+    NAME = res.by || CONFIG.NAME;
+    ingest(res.records || []);
+    $('#demo').classList.toggle('hidden', !res.demo);
+    render();
+    show('app');
+  } catch (e) {
+    store('salesPin', null);
+    show('login');
+    $('#err').textContent = fromLogin ? (e.message === 'Wrong PIN' ? 'Incorrect PIN, try again.' : 'Could not load the report. Check your connection.') : '';
+  }
+}
+
+function ingest(list) {
+  RECORDS = {};
+  list.forEach(r => {
+    if (!r || !r.date) return;
+    const prev = RECORDS[r.date];
+    if (!prev || String(r.submitted || '') >= String(prev.submitted || '')) RECORDS[r.date] = r;
+  });
+  const keys = Object.keys(RECORDS).sort();
+  const now = new Date();
+  const nowM = now.getFullYear() + '-' + pad(now.getMonth() + 1);
+  const hasNow = keys.some(k => k.startsWith(nowM));
+  const base = (!hasNow && keys.length) ? parseD(keys[keys.length - 1]) : now;
+  cur = new Date(base.getFullYear(), base.getMonth(), 1);
+}
+
+function render() {
+  $('#who').textContent = NAME;
+  const keys = Object.keys(RECORDS).sort();
+  const lastK = keys[keys.length - 1];
+  const last = lastK ? RECORDS[lastK] : null;
+  $('#updated').textContent = last ? 'Last report: ' + niceDate(lastK) : 'No reports yet';
+  $('#foot').textContent = 'Updated automatically from daily submissions · ' + NAME;
+
+  // latest card
+  const lt = $('#latest');
+  if (last) {
+    lt.classList.remove('hidden');
+    lt.innerHTML = '<div><div class="l1">' + (lastK === todayKey() ? "Today's report" : 'Latest report') + '</div>' +
+      '<div class="l2">' + niceDate(lastK) + '</div>' +
+      '<div class="l3">Sales ' + omr(last.sales) + ' OMR · Collection ' + omr(last.collection) + ' OMR</div></div>' +
+      '<div class="go"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></svg></div>';
+    lt.onclick = () => openDay(lastK);
+  } else lt.classList.add('hidden');
+
+  renderMonth();
+}
+
+function renderMonth() {
+  const y = cur.getFullYear(), m = cur.getMonth();
+  const mk = y + '-' + pad(m + 1);
+  $('#mTitle').textContent = MONTHS[m] + ' ' + y;
+  const now = new Date();
+  $('#next').disabled = (y > now.getFullYear()) || (y === now.getFullYear() && m >= now.getMonth());
+
+  const recs = Object.keys(RECORDS).filter(k => k.startsWith(mk)).sort().map(k => RECORDS[k]);
+  const sum = f => recs.reduce((t, r) => t + num(r[f]), 0);
+  const latestLeads = recs.length ? num(recs[recs.length - 1].leads) : 0;
+
+  $('#kpis').innerHTML =
+    kpi('Total Sales', omr(sum('sales')), 'OMR', recs.length + ' days reported') +
+    kpi('Collection', omr(sum('collection')), 'OMR', 'Cash on hold ' + omr(sum('holdCash'))) +
+    kpi('Orders', sum('orders'), '', sum('credit') + ' credit · ' + sum('cash') + ' cash') +
+    kpi('New Orders', sum('newOrders'), '', omr(sum('newAmt')) + ' OMR');
+
+  $('#chips').innerHTML =
+    chip('Won customers', sum('won')) + chip('Upselling', sum('upsell')) +
+    chip('Reactivated', sum('dormant')) + chip('Open leads', latestLeads);
+
+  const first = new Date(y, m, 1).getDay();
+  const days = new Date(y, m + 1, 0).getDate();
+  const tk = todayKey();
+  let h = '';
+  for (let i = 0; i < first; i++) h += '<div class="day blank"></div>';
+  for (let d = 1; d <= days; d++) {
+    const k = mk + '-' + pad(d);
+    const r = RECORDS[k];
+    const cls = 'day' + (r ? ' has' : '') + (k === tk ? ' today' : '') + (k > tk ? ' future' : '');
+    h += r
+      ? '<button class="' + cls + '" data-d="' + k + '" aria-label="' + niceDate(k) + '"><span class="dn">' + d + '</span><span class="amt">' + short(r.sales) + '</span></button>'
+      : '<div class="' + cls + '"><span class="dn">' + d + '</span></div>';
+  }
+  $('#grid').innerHTML = h;
+  $('#emptyNote').classList.toggle('hidden', recs.length > 0);
+  document.querySelectorAll('.day.has').forEach(b => b.onclick = () => openDay(b.dataset.d));
+}
+
+const kpi = (l, v, u, s) => '<div class="card kpi"><div class="kl">' + l + '</div><div class="kv">' + v + (u ? '<small>' + u + '</small>' : '') + '</div><div class="ks">' + s + '</div></div>';
+const chip = (l, v) => '<span class="chip">' + l + '<b>' + v + '</b></span>';
+
+function openDay(k) {
+  const r = RECORDS[k]; if (!r) return;
+  const keys = Object.keys(RECORDS).sort();
+  const i = keys.indexOf(k), pk = keys[i - 1], nk = keys[i + 1];
+  const st = (l, v, s) => '<div class="st"><div class="sl">' + l + '</div><div class="sv">' + v + (s ? '<small>' + s + '</small>' : '') + '</div></div>';
+  const note = (l, v) => String(v || '').trim() ? '<div class="note"><div class="nl">' + l + '</div><div class="nv">' + esc(v) + '</div></div>' : '';
+  const notes = note('Calls, visits & meetings', r.activity) + note('Collection outlets', r.collOutlets) +
+    note('Upselling – customers & details', r.upsellDetails) + note('Dormant / reactivated – details', r.dormantDetails);
+  const navBtn = (key, dir) => '<button class="nbtn" ' + (key ? 'data-go="' + key + '"' : 'disabled') + ' aria-label="' + (dir < 0 ? 'Previous' : 'Next') + ' day">' +
+    '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="' + (dir < 0 ? 'M15 6l-6 6 6 6' : 'M9 6l6 6-6 6') + '"/></svg></button>';
+
+  $('#modal').innerHTML =
+    '<div class="back" id="back"><div class="sheet" role="dialog" aria-modal="true">' +
+      '<div class="sh"><div class="t"><div class="t1">Daily report</div><div class="t2">' + niceDate(k) + '</div></div>' +
+        navBtn(pk, -1) + navBtn(nk, 1) +
+        '<button class="nbtn" id="close" aria-label="Close"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>' +
+      '<div class="hero">' +
+        '<div><div class="sl">Sales</div><div class="kv">' + omr(r.sales) + '<small>OMR</small></div></div>' +
+        '<div><div class="sl">Collection</div><div class="kv">' + omr(r.collection) + '<small>OMR</small></div></div>' +
+      '</div>' +
+      '<div class="stats">' +
+        st('Total orders', num(r.orders), num(r.credit) + ' credit · ' + num(r.cash) + ' cash') +
+        st('On-hold orders', num(r.hold), omr(r.holdCash) + ' OMR on hold') +
+        st('New orders', num(r.newOrders), omr(r.newAmt) + ' OMR') +
+        st('New orders collection', omr(r.newCol), 'OMR') +
+        st('Open leads', num(r.leads)) +
+        st('Won customers', num(r.won)) +
+        st('Upselling outlets', num(r.upsell)) +
+        st('Dormant / reactivated', num(r.dormant)) +
+      '</div>' +
+      (notes ? '<div class="notes">' + notes + '</div>' : '') +
+      (r.submitted ? '<div class="sub">Submitted ' + esc(String(r.submitted).replace('T', ' at ')) + '</div>' : '') +
+    '</div></div>';
+
+  $('#close').onclick = closeDay;
+  $('#back').onclick = e => { if (e.target.id === 'back') closeDay(); };
+  document.querySelectorAll('[data-go]').forEach(b => b.onclick = () => openDay(b.dataset.go));
+  document.body.style.overflow = 'hidden';
+}
+function closeDay() { $('#modal').innerHTML = ''; document.body.style.overflow = ''; }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDay(); });
+
+$('#prev').onclick = () => { cur = new Date(cur.getFullYear(), cur.getMonth() - 1, 1); renderMonth(); };
+$('#next').onclick = () => { cur = new Date(cur.getFullYear(), cur.getMonth() + 1, 1); renderMonth(); };
+$('#refresh').onclick = () => start(pin, false);
+$('#logout').onclick = () => { store('salesPin', null); pin = ''; $('#pin').value = ''; $('#err').textContent = ''; show('login'); };
+$('#loginForm').onsubmit = e => { e.preventDefault(); const p = $('#pin').value.trim(); if (p) start(p, true); };
+
+function demoData() {
+  const mk = (date, o) => Object.assign({ date: date, submitted: date + 'T19:30', sales: 0, orders: 0, credit: 0, cash: 0, hold: 0, holdCash: 0,
+    newOrders: 0, newAmt: 0, newCol: 0, collection: 0, collOutlets: '', leads: 0, won: 0, upsell: 0, upsellDetails: '', dormant: 0, dormantDetails: '', activity: '' }, o);
+  return [
+    mk('2026-10-19', { sales: 210.5, orders: 3, credit: 2, cash: 1, collection: 95.25, collOutlets: 'Al Mouj Cafe – 95.250', leads: 2, activity: 'Visited 4 outlets in Al Khuwair\nCall with Al Mouj Cafe' }),
+    mk('2026-10-20', { sales: 88, orders: 1, credit: 1, collection: 120, leads: 1, won: 1, activity: 'Meeting with new cafe in Seeb – signed' }),
+    mk('2026-10-21', { sales: 0, orders: 0, collection: 45.5, leads: 1, activity: 'Follow-up calls with 6 outlets' }),
+    mk('2026-10-22', { sales: 153, orders: 2, credit: 2, cash: 0, newOrders: 1, newAmt: 153, newCol: 153, collection: 166.215, upsell: 1,
+      upsellDetails: 'Flowcafe', activity: 'Calls to arrange meeting with Flow Cafe\nMeeting with Charruzi Cafe Nizwa today' })
+  ];
+}
+
+// boot
+$('#loginWho').textContent = CONFIG.NAME + ' · enter PIN to view';
+const saved = load('salesPin');
+if (!CONFIG.API_URL) start('demo', false);
+else if (saved) start(saved, false);
+else show('login');
+</script>
+</body>
+</html>
